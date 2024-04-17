@@ -1,0 +1,12 @@
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"
+
+[server]
+runOnSave = true
+
+[theme]
+base="dark"
+# secondaryBackgroundColor="#c6dcf2"
+font="sans serif"
+
