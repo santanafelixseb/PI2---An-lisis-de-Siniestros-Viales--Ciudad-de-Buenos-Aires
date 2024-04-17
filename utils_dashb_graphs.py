@@ -389,7 +389,7 @@ def crear_ub_graphstack_diasemana_calle(df_in, width=500, height=400):
         go.Bar(name=col, x=df_agrupado.index, y=df_agrupado[col]) for col in df_agrupado.columns
     ])
     # Configuramos el layout
-    fig.update_layout(barmode='stack', xaxis_title='Franja Hora', yaxis_title='Victimas',
+    fig.update_layout(barmode='stack', xaxis_title='Día de Semana', yaxis_title='Victimas',
                     title='Victimas por Día de Semana y Tipo de Calle',
                     autosize=False, width=width, height=height,
                     legend=dict(x=1, y=1),
