@@ -7,7 +7,7 @@ Este repositorio contiene un proyecto completo de análisis de datos centrado en
 El conjunto de datos utilizado para este análisis incluye información sobre siniestros que resultaron en muertes dentro de Buenos Aires. Contiene detalles como la fecha y hora del accidente, ubicación, tipo de vehículo involucrado, datos demográfico y más.
 
 ## Estructura de Carpetas del Proyecto
-A continuación se muestra una estructura de carpetas para este proyecto:
+La estructura de carpetas para este proyecto es la siguiente:
 ```
 ├── .streamlit/
 │   └── config.toml
@@ -38,10 +38,13 @@ A continuación se muestra una estructura de carpetas para este proyecto:
 2. Instala las dependencias del proyecto utilizando `pip install -r requirements.txt`.
 3. Ejecuta el panel con `streamlit run Portal.py`.
 
+## Acceso al Panel (Dashboard)
+El panel interactivo esta disponible vía hosting de Streamlit.
+- Accede al [Dashboard](https://siniestros-viales-caba-dashboard.streamlit.app/) aquí.
+
 ## Conclusiones
 En el análisis explorativo, observamos los siguientes hechos:
 - La mayoría de las víctimas tienen aproximadamente de 20 a 45 años de edad.
-- Hay una cantidad de víctimas desproporcionadamente alta de 42 años de edad.
 - Hay una proporción mayor de víctimas con rol de conductor.
 - Dentro de las víctimas con rol de conductor, la mayoría son jóvenes del grupo etario de 21 a 40 años.
 - Los autos, vehículos de carga y vehículos de pasajeros son los acusados más frecuentes.
