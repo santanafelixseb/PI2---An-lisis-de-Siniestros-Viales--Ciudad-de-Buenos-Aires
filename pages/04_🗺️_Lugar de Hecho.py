@@ -20,12 +20,12 @@ width = 500
 height = 350
 with col1:
     #st.markdown(ud.STR_INVISIBLE)
-    st.plotly_chart(udg.crear_ub_graphpareto_comuna(df, width=width, height=300), use_container_width=True)
+    st.plotly_chart(udg.crear_lh_graphpareto_comuna(df, width=width, height=350), use_container_width=True)
     subcol1, subcol2 = st.columns(2)
     with subcol1:
-        st.plotly_chart(udg.crear_ub_graphstack_diasemana_calle(df, width=width, height=height), use_container_width=True)
+        st.plotly_chart(udg.crear_lh_graphstack_diasemana_calle(df, width=width, height=height), use_container_width=True)
     with subcol2:
-        st.plotly_chart(udg.crear_ub_graphstack_franja_calle(df, width=width, height=height), use_container_width=True)
+        st.plotly_chart(udg.crear_lh_graphstack_franja_calle(df, width=width, height=height), use_container_width=True)
 with col3:
-    st.plotly_chart(udg.crear_ub_graphpie_tipocalle(df, width=width, height=280), use_container_width=True)
-    st.plotly_chart(udg.crear_ub_graphpie_cruce(df, width=width, height=350), use_container_width=True)
+    st.plotly_chart(udg.crear_lh_graphpie_tipocalle(df, width=width, height=280), use_container_width=True)
+    st.plotly_chart(udg.crear_lh_graphpie_cruce(df, width=width, height=350), use_container_width=True)
