@@ -1,22 +1,24 @@
 """Funciones de creacion de graficas, para la aplicacion Streamlit
 """
 
+import warnings
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+warnings.filterwarnings('ignore', category=FutureWarning)
+
 
 
 ####  Funciones de 'Datos Temporales'  ####
-
 
 def crear_dt_histograma_fecha(df_in, width=700, height=350):
     """Crea una grafica de barras de Histograma de Victimas.
     """
     # Instanciamos un nuevo dataframe
     df = pd.DataFrame()
-    # Create a new column for date bins
+    # Creamos nueva columna, con la columna 'FECHA_HORA' dividivo en {bins} partes
     df['date_bin'] = pd.cut(df_in['FECHA_HORA'], bins=80)
     # Convertimos el formato de 'date_bin', para mostrar fechas como YYYY-MM
     df['date_bin'] = df['date_bin'].apply(lambda x: f'{x.left.strftime("%Y-%m")}')
@@ -26,7 +28,7 @@ def crear_dt_histograma_fecha(df_in, width=700, height=350):
     fig = px.bar(df_grouped, x='date_bin', y='count', labels={'date_bin':'Fecha', 'count':'Victimas'},
                 title='Histograma Victimas',)
     fig.update_layout(autosize=False, width=width, height=height,
-                      template='ggplot2')
+                      template='plotly_dark')
     return fig
 
 
@@ -35,7 +37,7 @@ def crear_dt_graphlinea_fecha(df_in, width=700, height=350):
     """
     # Instanciamos un nuevo dataframe
     df = pd.DataFrame()
-    # Create a new column for date bins
+    # Creamos nueva columna, con la columna 'FECHA_HORA' dividivo en {bins} partes
     df['date_bin'] = pd.cut(df_in['FECHA_HORA'], bins=24)
     # Convertimos el formato de 'date_bin', para mostrar fechas como YYYY-MM
     df['date_bin'] = df['date_bin'].apply(lambda x: f'{x.left.strftime("%Y-%m")}')
@@ -54,7 +56,7 @@ def crear_dt_graphlinea_franja(df_in, width=700, height=350):
     # Agrupamos victimas por franja hora
     df_agrupado = df_in.groupby('Franja_Hora')['N_VICTIMAS'].sum().reset_index()
     fig = px.line(df_agrupado, x='Franja_Hora', y='N_VICTIMAS', title='Victimas por Franja Hora')
-    # Adjutamos el tamano
+    # Adjustamos el layout de la grafica
     fig.update_layout(xaxis_title="Franja Hora", yaxis_title="Victimas",
                       autosize=False, width=width, height=height,
                       template='plotly_dark')
@@ -66,7 +68,7 @@ def crear_dt_graphlinea_semana(df_in, width=700, height=350):
     # Agrupamos victimas por dia de semana
     df_agrupado = df_in.groupby('DIA_DE_SEMANA')['N_VICTIMAS'].sum().reset_index()
     fig = px.line(df_agrupado, x='DIA_DE_SEMANA', y='N_VICTIMAS', title='Victimas por Dia de Semana')
-    # Adjutamos el tamano
+    # Adjustamos el layout de la grafica
     fig.update_layout(xaxis_title="Dia de Semana", yaxis_title="Victimas",
                       autosize=False, width=width, height=height,
                       template='plotly_dark')
@@ -78,7 +80,7 @@ def crear_dt_graphlinea_mes(df_in, width=700, height=350):
     # Agrupamos victimas por mes
     df_agrupado = df_in.groupby('MES')['N_VICTIMAS'].sum().reset_index()
     fig = px.line(df_agrupado, x='MES', y='N_VICTIMAS', title='Victimas por Mes')
-    # Adjutamos el tamano
+    # Adjustamos el layout de la grafica
     fig.update_layout(xaxis_title="Mes", yaxis_title="Victimas",
                     autosize=False, width=width, height=height,
                     template='plotly_dark')
@@ -90,7 +92,7 @@ def crear_dt_graphlinea_estacion(df_in, width=700, height=350):
     # Agrupamos victimas por Estaciones
     df_agrupado = df_in.groupby('Estaciones')[['N_VICTIMAS']].sum().reset_index()
     fig = px.line(df_agrupado, x='Estaciones', y='N_VICTIMAS', title='Victimas por Estación')
-    # Adjutamos el tamano
+    # Adjustamos el layout de la grafica
     fig.update_layout(xaxis_title="Estación", yaxis_title="Victimas",
                     autosize=False, width=width, height=height,
                     template='plotly_dark')
@@ -122,7 +124,6 @@ def crear_dt_graphstack_clasificacion(df_in, width=600, height=450):
 
 ####  Funciones de 'Demográfico'  ####
 
-
 def crear_dem_graphpie_sexo(df_in, width=600, height=450):
     # Crea una grafica Pie-chart
     # Primero filtramos fuera los datos nulos
@@ -146,8 +147,11 @@ def crear_dem_graphpie_sexo(df_in, width=600, height=450):
 
 def crear_dem_graphpie_edad(df_in, width=600, height=450):
     # Crea una grafica Pie-chart
-    fig = go.Figure(data=[go.Pie(labels=df_in['EDAD_GRUPO'],
-        values=df_in['N_VICTIMAS'],
+    df = df_in.copy()
+    dfr = df[::-1]
+
+    fig = go.Figure(data=[go.Pie(labels=dfr['EDAD_GRUPO'],
+        values=dfr['N_VICTIMAS'],
         rotation=90,
         textposition='outside'
     )])
@@ -162,7 +166,7 @@ def crear_dem_graphpie_edad(df_in, width=600, height=450):
     return fig
 
 
-def crear_dem_graphpie_edad(df_in, width=600, height=450):
+def crear_dem_graphpie_Top_4_Vict(df_in, width=600, height=450):
     # Crea una grafica Pie-chart
     # Filtramos por victimas con mayor frecuancia, para no sobrecargar la grafica
     victima_filtro = ['AUTO','BICICLETA','MOTO','PEATON']
@@ -202,18 +206,24 @@ def crear_dem_graphstack_clas_edad(df_in, width=600, height=450):
     df_agrupado['suma'] = df_agrupado.sum(axis=1)
     df_agrupado.sort_values('suma', ascending=False, inplace=True)
     df_agrupado.drop(columns='suma', inplace=True)
+    
+    # Configurar el diseño del grafico
+    layout = go.Layout(
+        barmode='stack',
+        title='Tipo de Victimas',
+        xaxis_title='Tipo Victima', yaxis_title='Victimas',
+        autosize=False, width=width, height=height,
+        legend={
+            'title':'Grupo Etario',
+            'traceorder':'normal'
+        },
+        template='plotly_dark'
+    )
     # Crea una grafica de barras tipo stacked
     fig = go.Figure(data=[
         go.Bar(name=col, x=df_agrupado.index, y=df_agrupado[col]) for col in df_agrupado.columns
-    ])
-    # Configuramos el layout
-    fig.update_layout(barmode='stack', xaxis_title='Tipo Victima', yaxis_title='Victimas',
-                    title='Tipo de Victimas',
-                    autosize=False, width=width, height=height,
-                    legend=dict(x=1, y=1),
-                    legend_title='Grupo Etario',
-                    template='plotly_dark'
-    )
+    ], layout=layout)
+
     return fig
 
 
@@ -225,18 +235,24 @@ def crear_dem_graphstack_acusado_edad(df_in, width=600, height=450):
     df_agrupado['suma'] = df_agrupado.sum(axis=1)
     df_agrupado.sort_values('suma', ascending=False, inplace=True)
     df_agrupado.drop(columns='suma', inplace=True)
+    
+    # Configurar el diseño del grafico
+    layout = go.Layout(
+        barmode='stack',
+        title='Victimas por Acusado',
+        xaxis_title='Acusado', yaxis_title='Victimas',
+        autosize=False, width=width, height=height,
+        legend={
+            'title':'Grupo Etario',
+            'traceorder':'normal'
+        },
+        template='plotly_dark'
+    )
     # Crea una grafica de barras tipo stacked
     fig = go.Figure(data=[
         go.Bar(name=col, x=df_agrupado.index, y=df_agrupado[col]) for col in df_agrupado.columns
-    ])
-    # Configuramos el layout
-    fig.update_layout(barmode='stack', xaxis_title='Acusado', yaxis_title='Victimas',
-                    title='Victimas por Acusado',
-                    autosize=False, width=width, height=height,
-                    legend_title='Grupo Etario',
-                    legend=dict(x=1, y=1),
-                    template='plotly_dark'
-    )
+    ], layout=layout)
+
     return fig
 
 
@@ -266,11 +282,11 @@ def crear_dem_graphstack_rol_edad(df_in, width=600, height=450):
 
 ####  Funciones de 'Lugar de Hechos'  ####
 
-
-def crear_ub_graphpie_tipocalle(df_in, width=500, height=400):
+def crear_lh_graphpie_tipocalle(df_in, width=500, height=400):
     # Crea una grafica Pie-chart
     # Primero filtramos fuera los datos nulos
     df = df_in[df_in['TIPO_DE_CALLE'].notna()]
+    df.sort_values('TIPO_DE_CALLE', inplace=True)
     fig = go.Figure(data=[go.Pie(labels=df['TIPO_DE_CALLE'],
                                 values=df['N_VICTIMAS'],
                                 rotation=90,
@@ -286,9 +302,10 @@ def crear_ub_graphpie_tipocalle(df_in, width=500, height=400):
     return fig
 
 
-def crear_ub_graphpie_cruce(df_in, width=500, height=400):
+def crear_lh_graphpie_cruce(df_in, width=500, height=400):
     # Crea una grafica Pie-chart
     # Crea la grafica
+    df_in.sort_values('TIPO_DE_CALLE', inplace=True)
     fig = go.Figure(data=[go.Pie(labels=df_in['Cruce'],
                                 values=df_in['N_VICTIMAS'],
                                 rotation=90,
@@ -304,7 +321,11 @@ def crear_ub_graphpie_cruce(df_in, width=500, height=400):
     return fig
 
 
-def crear_ub_graphpareto_comuna(df_in, width=500, height=400):
+def crear_lh_graphpareto_comuna(df_in, width=500, height=400):
+    """Devuelve un objeto de la clase go.Figure, de Distribución de Pareto.
+    Se manipula datos del DataFrame de entrado 'df_in', y se llama la funcion subescrita
+    nombrada 'crear_grafica_pareto'.
+    """
     def crear_grafica_pareto(df_input: pd.DataFrame, col: str) -> go.Figure:
         """Devuelve un objeto de la clase go.Figure de una grafica de 
         Distribución de Pareto.
@@ -323,12 +344,13 @@ def crear_ub_graphpareto_comuna(df_in, width=500, height=400):
             ),
         ]
         layout = {
-        "title": {'text': f"Distribución de Pareto - Comunas"}, 
+        "title": {'text': "Distribución de Pareto - Comunas"}, 
         "margin": {"b": 20,"l": 50,"r": 50,"t": 10}, 
         "legend": {"x": 0.6,"y": 1.2,'orientation': 'h',
         },
+        "xaxis": {"title": "Comuna"}, 
         # axis-Y 1
-        "yaxis": {"title": f"Victimas"}, 
+        "yaxis": {"title": "Victimas"}, 
         # axis-Y 2
         "yaxis2": {"side": "right","range": [0, 100],"title": f"Porcentaje","overlaying": "y","ticksuffix": " %",}, 
         }
@@ -340,7 +362,7 @@ def crear_ub_graphpareto_comuna(df_in, width=500, height=400):
         )
         return fig
 
-    # Primeros Crea un dataframe nuevo con los datos requeridos
+    # Primero crea un dataframe nuevo con los datos requeridos
     col = 'COMUNA'
     grp = df_in.groupby([col])[col].count()
     df = pd.DataFrame(grp)
@@ -363,12 +385,20 @@ def crear_ub_graphpareto_comuna(df_in, width=500, height=400):
     return fig
 
 
-def crear_ub_graphstack_franja_calle(df_in, width=500, height=400):
+def crear_lh_graphstack_franja_calle(df_in, width=500, height=400):
+    # Creamos gafica de barras stack
+    df = df_in.copy()
     # Agrupamos por 'Franja_Hora' y 'TIPO_DE_CALLE'
-    df_agrupado = df_in.groupby(['Franja_Hora', 'TIPO_DE_CALLE']).size().unstack()
+    df_agrupado = df.groupby(['Franja_Hora', 'TIPO_DE_CALLE']).size().unstack()
+    
+    # Sort
+    #custom_order = ['AVENIDA', 'AUTOPISTA', 'CALLE']
+    #df_agrupado['TIPO_DE_CALLE'] = pd.Categorical(df_agrupado['TIPO_DE_CALLE'], categories=custom_order, ordered=True)
+    
     # Crea una grafica de barras tipo stacked
+    df_agrupado_sort = df_agrupado.sort_values('TIPO_DE_CALLE', axis=1, ascending=False)
     fig = go.Figure(data=[
-        go.Bar(name=col, x=df_agrupado.index, y=df_agrupado[col]) for col in df_agrupado.columns
+        go.Bar(name=col, x=df_agrupado_sort.index, y=df_agrupado_sort[col]) for col in df_agrupado_sort.columns
     ])
     # Configuramos el layout
     fig.update_layout(barmode='stack', xaxis_title='Franja Hora', yaxis_title='Victimas',
@@ -381,12 +411,13 @@ def crear_ub_graphstack_franja_calle(df_in, width=500, height=400):
     return fig
 
 
-def crear_ub_graphstack_diasemana_calle(df_in, width=500, height=400):
+def crear_lh_graphstack_diasemana_calle(df_in, width=500, height=400):
     # Agrupamos por 'VICTIMA' y 'EDAD_GRUPO'
-    df_agrupado = df_in.groupby(['DIA_DE_SEMANA', 'TIPO_DE_CALLE']).size().unstack()
+    df_agrupado:pd.DataFrame = df_in.groupby(['DIA_DE_SEMANA', 'TIPO_DE_CALLE']).size().unstack()
+    df_agrupado_sort = df_agrupado.sort_values('TIPO_DE_CALLE', axis=1, ascending=False)
     # Creamos una grafica de barras tipo stacked
     fig = go.Figure(data=[
-        go.Bar(name=col, x=df_agrupado.index, y=df_agrupado[col]) for col in df_agrupado.columns
+        go.Bar(name=col, x=df_agrupado_sort.index, y=df_agrupado_sort[col]) for col in df_agrupado_sort.columns
     ])
     # Configuramos el layout
     fig.update_layout(barmode='stack', xaxis_title='Día de Semana', yaxis_title='Victimas',
