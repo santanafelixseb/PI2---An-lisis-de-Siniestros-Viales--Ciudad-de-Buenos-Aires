@@ -24,16 +24,15 @@ num_victimas = df_filtro_anio['N_VICTIMAS'].sum()
 num_hechos = df_filtro_anio.shape[0]
 
 # Columnas para metricas 
-col1, col2, col3, _ = st.columns((1,3,20,7))
-with col1:
-    pass
+_, col2, _, col4, _ = st.columns((1,5,2,30,7))
 with col2:
     pass  # Espacio en blanco
-    st.markdown(ud.STR_INVISIBLE)
-    st.markdown(f"{seleccion_anio[0]} - {seleccion_anio[1]}")
-    st.metric('Victimas', num_victimas)
-    st.metric('Hechos', num_hechos)
-with col3:
+    st.markdown(ud.STR_INVISIBLE)  # insertar espacio invisible
+    with st.container(border=True):
+        st.markdown(f"{ud.STR_INVISIBLE} {seleccion_anio[0]} - {seleccion_anio[1]}")
+        st.metric(f'{ud.STR_INVISIBLE} Victimas', num_victimas)
+        st.metric(f'{ud.STR_INVISIBLE} Hechos', num_hechos)
+with col4:
     st.plotly_chart(udg.crear_dt_histograma_fecha(df_filtro_anio, width=500, height=325), use_container_width=True)
     
 
@@ -50,5 +49,3 @@ with col3:
     st.plotly_chart(udg.crear_dt_graphlinea_fecha(df_filtro_anio, width=width_g, height=height_g), use_container_width=True)
     st.plotly_chart(udg.crear_dt_graphlinea_mes(df_filtro_anio, width=width_g, height=height_g), use_container_width=True)
     st.plotly_chart(udg.crear_dt_graphlinea_franja(df_filtro_anio, width=width_g, height=height_g), use_container_width=True)
-
-    
